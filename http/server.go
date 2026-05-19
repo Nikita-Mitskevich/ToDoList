@@ -37,5 +37,4 @@ func (s *HTTPServer) StartServer() error {
 		}
 	}
 	return nil
-
 }
