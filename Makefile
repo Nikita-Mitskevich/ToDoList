@@ -50,3 +50,8 @@ env-port-forward:
 
 env-port-down:	
 	@docker compose up -d port-forwarder
+
+todoapp-run:
+	@export POSTGRES_HOST=localhost && \
+	go run cmd/todoapp/main.go 
+	
