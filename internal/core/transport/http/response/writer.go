@@ -22,7 +22,7 @@ func (h *ResponseWriter) WriteHeader(statusCode int) {
 
 func (h *ResponseWriter) GetStatusCode() int {
 	if h.statusCode == StartCode {
-		panic("no status code set")
+		return http.StatusOK
 	}
 	return h.statusCode
 }

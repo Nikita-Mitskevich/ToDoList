@@ -1,11 +1,15 @@
 package server
 
-import "net/http"
+import (
+	"net/http"
+	"restapi/internal/core/transport/http/middleware"
+)
 
 type Route struct {
-	Method  string
-	Path    string
-	Handler http.HandlerFunc
+	Method     string
+	Path       string
+	Handler    http.HandlerFunc
+	Middleware []middleware.Middleware
 }
 
 func NewRoute(Method string, Path string,
@@ -15,4 +19,6 @@ func NewRoute(Method string, Path string,
 		Handler: Handler}
 }
 
-//6.10.55
+func (r *Route) WithMiddleware() http.Handler {
+	return middleware.ChainMiddleware(r.Handler, r.Middleware...)
+}

@@ -1,7 +1,6 @@
 package middleware
 
 import (
-	"context"
 	"net/http"
 	core_logger "restapi/internal/core/logger"
 	core_http_response "restapi/internal/core/transport/http/response"
@@ -36,7 +35,7 @@ func Logger(log *core_logger.Logger) Middleware {
 				zap.String("request_id", requestId),
 				zap.String("url", r.URL.String()),
 			)
-			ctx := context.WithValue(r.Context(), "log", l)
+			ctx := core_logger.ToContext(r.Context(), l)
 			next.ServeHTTP(w, r.WithContext(ctx))
 		})
 	}

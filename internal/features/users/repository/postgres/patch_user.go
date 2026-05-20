@@ -6,8 +6,7 @@ import (
 	"fmt"
 	"restapi/internal/core/domain"
 	core_errors "restapi/internal/core/errors"
-
-	"github.com/jackc/pgx/v5"
+	core_postgres_pool "restapi/internal/core/repository/postgres/pool"
 )
 
 func (h *UsersRepository) PatchUser(ctx context.Context, id int, user domain.User) (domain.User, error) {
@@ -24,7 +23,7 @@ func (h *UsersRepository) PatchUser(ctx context.Context, id int, user domain.Use
 	row := h.pool.QueryRow(ctx, query, user.FullName, user.PhoneNumber, id, user.Version)
 	var userModel UserModel
 	if err := row.Scan(&userModel.ID, &userModel.Version, &userModel.FullName, &userModel.PhoneNumber); err != nil {
-		if errors.Is(err, pgx.ErrNoRows) {
+		if errors.Is(err, core_postgres_pool.ErrNoRows) {
 			return domain.User{}, fmt.Errorf("user with id = %d concurrently accessed: %w", id, core_errors.ErrConflict)
 		} else {
 			return domain.User{}, fmt.Errorf("scan user model: %w", err)

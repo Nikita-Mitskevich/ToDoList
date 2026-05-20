@@ -7,7 +7,7 @@ import (
 )
 
 type LoggerConfig struct {
-	Level  string `envconfig:"LOGGER_LEVEL" required:"true"`
+	Level  string `envconfig:"LOGGER_LEVEL" default:"DEGUB"`
 	Folder string `envconfig:"LOGGER_FOLDER" required:"true"`
 }
 

@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os/signal"
 	core_logger "restapi/internal/core/logger"
-	core_postgres_pool "restapi/internal/core/repository/postgres/pool"
+	core_pgx_pool "restapi/internal/core/repository/postgres/pool/pgx"
 	"restapi/internal/core/transport/http/middleware"
 	"restapi/internal/core/transport/http/server"
 	users_postgres_repository "restapi/internal/features/users/repository/postgres"
@@ -27,7 +27,7 @@ func main() {
 	defer log.Close()
 
 	log.Debug("initializing postgres connection pool")
-	pool, err := core_postgres_pool.NewConnectionPool(ctx, core_postgres_pool.NewConfigMust())
+	pool, err := core_pgx_pool.NewConnectionPool(ctx, core_pgx_pool.NewConfigMust())
 	if err != nil {
 		log.Fatal("failed to init postgres connection pool", zap.Error(err))
 	}
@@ -39,8 +39,8 @@ func main() {
 	usersTransport := user.NewUsersHTTPHandler(usersService)
 
 	log.Debug("initializing HTTP server")
-	httpServer := server.NewHTTPServer(server.NewConfigMust(), log, middleware.RequestId(), middleware.Logger(log), middleware.Panic(),
-		middleware.Trace())
+	httpServer := server.NewHTTPServer(server.NewConfigMust(), log, middleware.RequestId(), middleware.Logger(log),
+		middleware.Trace(), middleware.Panic())
 
 	apiRouter := server.NewAPIVersionRouter(server.ApiVersion1)
 	apiRouter.RegisterRoutes(usersTransport.Routes()...)
