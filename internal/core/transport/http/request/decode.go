@@ -30,8 +30,6 @@ func DecodeAndValidateRequest(r *http.Request, dest any) error {
 		if err := requestValidator.Struct(dest); err != nil {
 			return fmt.Errorf("validate json: %v: %w", err, core_errors.ErrInvalidArgument)
 		}
-		return nil
 	}
 	return nil
-
 }
