@@ -8,6 +8,9 @@ import (
 	core_pgx_pool "restapi/internal/core/repository/postgres/pool/pgx"
 	"restapi/internal/core/transport/http/middleware"
 	"restapi/internal/core/transport/http/server"
+	statistics_repository "restapi/internal/features/statistics/repository"
+	statistics_service "restapi/internal/features/statistics/service"
+	statistics_transport_http "restapi/internal/features/statistics/transport/http"
 	tasks_postgres_repository "restapi/internal/features/tasks/repository/postgres"
 	tasks_service "restapi/internal/features/tasks/service"
 	tasks_transport "restapi/internal/features/tasks/transport/http"
@@ -55,6 +58,11 @@ func main() {
 	tasksService := tasks_service.NewTasksService(tasksRepository)
 	tasksTransport := tasks_transport.NewTasksHTTPHandler(tasksService)
 
+	log.Debug("initializing feature", zap.String("feature", "statistics"))
+	statisticsRepository := statistics_repository.NewStatisticsReposiory(pool)
+	statisticsService := statistics_service.NewStatisticsService(statisticsRepository)
+	statisticsTransport := statistics_transport_http.NewStatisticsHTTPHandler(statisticsService)
+
 	log.Debug("initializing HTTP server")
 	httpServer := server.NewHTTPServer(server.NewConfigMust(), log, middleware.RequestId(), middleware.Logger(log),
 		middleware.Trace(), middleware.Panic())
@@ -62,6 +70,7 @@ func main() {
 	apiRouter := server.NewAPIVersionRouter(server.ApiVersion1)
 	apiRouter.RegisterRoutes(usersTransport.Routes()...)
 	apiRouter.RegisterRoutes(tasksTransport.Routes()...)
+	apiRouter.RegisterRoutes(statisticsTransport.Routes()...)
 
 	httpServer.RegisterAPIRoutes(apiRouter)
 	if err := httpServer.Run(ctx); err != nil {
