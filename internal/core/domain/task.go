@@ -101,3 +101,11 @@ func (t *Task) ApplyPatch(taskPatch TaskPatch) error {
 	*t = temp
 	return nil
 }
+
+func (t Task) CompletionDuration() *time.Duration {
+	if t.CompletedAt == nil || !t.Completed || t.CompletedAt.Before(t.CreatedAt) {
+		return nil
+	}
+	time := t.CompletedAt.Sub(t.CreatedAt)
+	return &time
+}
