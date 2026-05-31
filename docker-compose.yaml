@@ -1,8 +1,8 @@
 services:
   todoapp:
     build:
-      context: /home/nikita/Golang/ToDoList
-      dockerfile: /home/nikita/Golang/ToDoList/cmd/todoapp/Dockerfile
+      context: .
+      dockerfile: ./cmd/todoapp/Dockerfile
     container_name: todoapp
     environment: 
       - POSTGRES_PATH=${POSTGRES_PATH}
