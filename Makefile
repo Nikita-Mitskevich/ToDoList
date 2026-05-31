@@ -54,4 +54,7 @@ env-port-down:
 todoapp-run:
 	@export POSTGRES_HOST=localhost && \
 	go run cmd/todoapp/main.go 
+
+todoapp-deploy:
+	@docker compose up -d --build todoapp
 	
