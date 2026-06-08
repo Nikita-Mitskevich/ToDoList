@@ -20,9 +20,9 @@ func PatchTaskDTOFromDomain(task domain.Task) PatchTaskDTO {
 }
 
 type TaskPatchStruct struct {
-	Name        core_http_types.Nullable[string]
-	Description core_http_types.Nullable[string]
-	Completed   core_http_types.Nullable[bool]
+	Name        core_http_types.Nullable[string] `swaggertype:"string"`
+	Description core_http_types.Nullable[string] `swaggertype:"string"`
+	Completed   core_http_types.Nullable[bool]   `swaggertype:"bool"`
 }
 
 func (t *TaskPatchStruct) Validate() error {
@@ -51,6 +51,24 @@ func (t *TaskPatchStruct) Validate() error {
 	return nil
 }
 
+// PatchTask godoc
+// @Summary Изменить задачу
+// @Description Изменить информацию о существующей в системе задаче
+// @Description 1. **Поле не передано**: `description` игнорируется, значение в БД не меняется
+// @Description 2. **Явно передано значение**: `description:"сделать домашнее задание по математике"` - устанавливает новое описание в БД
+// @Description 3. **Передан null**: `"description": null` - очищает поле в БД (set to NULL)
+// @Description Ограничения: `title` и `completed` не могут быть выставлены как null
+// @Tags tasks
+// @Accept json
+// @Produce json
+// @Param id path int true "Айди изменяемой задачи"
+// @Param request body TaskPatchStruct true "PatchTask тело запроса"
+// @Success 200 {object} PatchTaskDTO "Успешно измененная задача"
+// @Failure 400 {object} core_http_response.ErrorResponse "Bad request"
+// @Failure 404 {object} core_http_response.ErrorResponse "Not found"
+// @Failure 409 {object} core_http_response.ErrorResponse "Conflict"
+// @Failure 500 {object} core_http_response.ErrorResponse "Internal server error"
+// @Router /tasks/{id} [patch]
 func (h *TasksHTTPHandler) PatchTask(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := core_logger.FromContext(ctx)

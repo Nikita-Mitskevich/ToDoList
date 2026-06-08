@@ -13,10 +13,28 @@ import (
 )
 
 type PatchUserStruct struct {
-	FullName    core_http_types.Nullable[string]
-	PhoneNumber core_http_types.Nullable[string]
+	FullName    core_http_types.Nullable[string] `swaggertype:"string"`
+	PhoneNumber core_http_types.Nullable[string] `swaggertype:"string"`
 }
 
+// PatchUser godoc
+// @Summary Изменить пользователя
+// @Description Изменить информацию о существующем пользователе в системе
+// @Description 1. **Поле не передано**: `phone_number` игнорируется, значение в БД не меняется
+// @Description 2. **Явно передано значение**: `phone_number:"+375111113322"` - устанавливает новый номер в БД
+// @Description 3. **Передан null**: `"phone_number": null` - очищает поле в БД (set to NULL)
+// @Description Ограничения: `full_name` не может быть выставлен null
+// @Tags users
+// @Accept json
+// @Produce json
+// @Param id path int true "Айди изменяемого пользователя"
+// @Param request body PatchUserStruct true "PatchUser тело запроса"
+// @Success 200 {object} UserDTOResponse "Успешно измененный пользователь"
+// @Failure 400 {object} core_http_response.ErrorResponse "Bad request"
+// @Failure 404 {object} core_http_response.ErrorResponse "Not found"
+// @Failure 409 {object} core_http_response.ErrorResponse "Conflict"
+// @Failure 500 {object} core_http_response.ErrorResponse "Internal server error"
+// @Router /users/{id} [patch]
 func (r *PatchUserStruct) Validate() error {
 	if r.FullName.Set {
 		if r.FullName.Value == nil {
@@ -68,7 +86,7 @@ func (h *UsersHTTPHandler) PatchUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	responseDTO := dtoFromDomain(userDomain)
+	responseDTO := UserDTOFromDomain(userDomain)
 
 	responseHandler.JSONResponse(responseDTO, http.StatusOK)
 

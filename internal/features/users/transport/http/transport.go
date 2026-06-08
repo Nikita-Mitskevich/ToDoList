@@ -26,7 +26,7 @@ func NewUsersHTTPHandler(s UsersService) *UsersHTTPHandler {
 func (h UsersHTTPHandler) Routes() []server.Route {
 	return []server.Route{
 		{
-			Method:  http.MethodPut,
+			Method:  http.MethodPost,
 			Path:    "/users",
 			Handler: h.CreateUser,
 		},

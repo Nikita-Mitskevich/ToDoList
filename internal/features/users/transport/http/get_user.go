@@ -7,6 +7,17 @@ import (
 	core_http_utils "restapi/internal/core/transport/http/utils"
 )
 
+// GetUser godoc
+// @Summary Получить пользователя
+// @Description Получить информацию о существующем пользователе в системе
+// @Tags users
+// @Produce json
+// @Param id path int true "ID получаемого пользователя"
+// @Success 200 {object} UserDTOResponse "Успешно полученный пользователь"
+// @Failure 400 {object} core_http_response.ErrorResponse "Bad request"
+// @Failure 404 {object} core_http_response.ErrorResponse "Not found"
+// @Failure 500 {object} core_http_response.ErrorResponse "Internal server error"
+// @Router /users/{id} [get]
 func (h *UsersHTTPHandler) GetUser(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := core_logger.FromContext(ctx)
