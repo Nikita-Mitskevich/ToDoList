@@ -49,6 +49,13 @@ func (s *HTTPServer) RegisterSwagger() {
 	)
 }
 
+func (h *HTTPServer) RegisterRoutes(routes ...Route) {
+	for _, route := range routes {
+		pattern := fmt.Sprintf("%s %s", route.Method, route.Path)
+		h.mux.Handle(pattern, route.WithMiddleware())
+	}
+}
+
 func (h *HTTPServer) Run(ctx context.Context) error {
 	mux := middleware.ChainMiddleware(h.mux,
 		h.middleware...,

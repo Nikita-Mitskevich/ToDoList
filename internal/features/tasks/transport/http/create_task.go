@@ -10,9 +10,9 @@ import (
 )
 
 type CreateTaskRequest struct {
-	Name        string  `validate:"required,min=3,max=100"`
-	Description *string `validate:"omitempty,min=1,max=1000"`
-	AuthorId    int     `validate:"required"`
+	Name        string  `validate:"required,min=3,max=100" json:"title"`
+	Description *string `validate:"omitempty,min=1,max=1000" json:"description"`
+	AuthorId    int     `validate:"required" json:"author_user_id,string"`
 }
 
 func TaskDomainFromDto(task CreateTaskRequest) domain.Task {
@@ -33,16 +33,16 @@ func TaskDTOFromDomain(t domain.Task) CreateTaskResponse {
 }
 
 type CreateTaskResponse struct {
-	ID      int
-	Version int
+	ID      int `json:"id"`
+	Version int `json:"version"`
 
-	Name        string
-	Description *string
-	Completed   bool
-	CreatedAt   time.Time
-	CompletedAt *time.Time
+	Name        string     `json:"title"`
+	Description *string    `json:"description"`
+	Completed   bool       `json:"completed"`
+	CreatedAt   time.Time  `json:"created_at"`
+	CompletedAt *time.Time `json:"completed_at"`
 
-	AuthorId int
+	AuthorId int `json:"author_user_id"`
 }
 
 // CreateTask godoc

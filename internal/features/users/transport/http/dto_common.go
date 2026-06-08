@@ -3,10 +3,10 @@ package user
 import "restapi/internal/core/domain"
 
 type UserDTOResponse struct {
-	ID          int
-	Version     int
-	Name        string
-	PhoneNumber *string
+	ID          int     `json:"id"`
+	Version     int     `json:"version"`
+	Name        string  `json:"full_name"`
+	PhoneNumber *string `json:"phone_number"`
 }
 
 func UserDTOFromDomain(user domain.User) UserDTOResponse {

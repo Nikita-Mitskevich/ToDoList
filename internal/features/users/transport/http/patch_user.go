@@ -13,8 +13,8 @@ import (
 )
 
 type PatchUserStruct struct {
-	FullName    core_http_types.Nullable[string] `swaggertype:"string"`
-	PhoneNumber core_http_types.Nullable[string] `swaggertype:"string"`
+	FullName    core_http_types.Nullable[string] `swaggertype:"string" json:"full_name"`
+	PhoneNumber core_http_types.Nullable[string] `swaggertype:"string" json:"phone_number"`
 }
 
 // PatchUser godoc

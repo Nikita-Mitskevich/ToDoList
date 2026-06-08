@@ -17,6 +17,9 @@ import (
 	users_postgres_repository "restapi/internal/features/users/repository/postgres"
 	users_service "restapi/internal/features/users/service"
 	user "restapi/internal/features/users/transport/http"
+	web_repository "restapi/internal/features/web/repository/file_system"
+	web_service "restapi/internal/features/web/service"
+	web_transport "restapi/internal/features/web/transport/http"
 	"syscall"
 	"time"
 
@@ -70,6 +73,11 @@ func main() {
 	statisticsService := statistics_service.NewStatisticsService(statisticsRepository)
 	statisticsTransport := statistics_transport_http.NewStatisticsHTTPHandler(statisticsService)
 
+	log.Debug("initializing feature", zap.String("feature", "web"))
+	webRepository := web_repository.NewWebRepository()
+	webService := web_service.NewWebService(webRepository)
+	webTransport := web_transport.NewHTTPWebHandler(webService)
+
 	log.Debug("initializing HTTP server")
 	httpServer := server.NewHTTPServer(server.NewConfigMust(), log, middleware.CORS(), middleware.RequestId(), middleware.Logger(log),
 		middleware.Trace(), middleware.Panic())
@@ -80,6 +88,7 @@ func main() {
 	apiRouter.RegisterRoutes(statisticsTransport.Routes()...)
 
 	httpServer.RegisterAPIRoutes(apiRouter)
+	httpServer.RegisterRoutes(webTransport.GetRoutes()...)
 
 	httpServer.RegisterSwagger()
 
