@@ -20,6 +20,14 @@ func NewHTTPResponseHandler(zap *core_logger.Logger, rw http.ResponseWriter) *HT
 	return &HTTPResponseHandler{zap: zap, rw: rw}
 }
 
+func (h *HTTPResponseHandler) HTMLResponse(html []byte) {
+	h.rw.WriteHeader(http.StatusOK)
+	h.rw.Header().Set("Content-Type", "text/html; charset=utf-8")
+	if _, err := h.rw.Write(html); err != nil {
+		h.zap.Error("write HTML HTTP response", zap.Error(err))
+	}
+}
+
 func (h *HTTPResponseHandler) HandlePanic(p any, msg string) {
 	err := fmt.Errorf("Unexpected panic: %v", p)
 	h.zap.Error(msg, zap.Error(err))
