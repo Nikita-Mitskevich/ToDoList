@@ -5,8 +5,11 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"restapi/docs"
 	core_logger "restapi/internal/core/logger"
 	"restapi/internal/core/transport/http/middleware"
+
+	httpSwagger "github.com/swaggo/http-swagger"
 
 	"go.uber.org/zap"
 )
@@ -27,6 +30,23 @@ func (h *HTTPServer) RegisterAPIRoutes(routers ...*APIVersionRouter) {
 		prefix := "/api" + string(router.apiVersion)
 		h.mux.Handle(prefix+"/", http.StripPrefix(prefix, router.WithMiddleware()))
 	}
+}
+
+func (s *HTTPServer) RegisterSwagger() {
+	s.mux.Handle(
+		"/swagger/", httpSwagger.Handler(
+			httpSwagger.URL("/swagger/doc.json"),
+		),
+	)
+
+	s.mux.HandleFunc(
+		"/swagger/doc.json",
+		func(w http.ResponseWriter, r *http.Request) {
+			w.Header().Set("Content-Type", "application/json")
+			w.WriteHeader(http.StatusOK)
+			_, _ = w.Write([]byte(docs.SwaggerInfo.ReadDoc()))
+		},
+	)
 }
 
 func (h *HTTPServer) Run(ctx context.Context) error {
@@ -67,5 +87,3 @@ func (h *HTTPServer) Run(ctx context.Context) error {
 	}
 	return nil
 }
-
-// 5.54.33

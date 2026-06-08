@@ -16,12 +16,23 @@ func TasksDTOFromDomains(tasks []domain.Task) GetTaskResponse {
 	var tasksDTO GetTaskResponse
 	for _, task := range tasks {
 		tasksDTO = append(tasksDTO, TaskDTO{ID: task.ID, Version: task.Version, Name: task.Name,
-		Description: task.Description, Completed: task.Completed, CreatedAt: task.CreatedAt, CompletedAt: task.CompletedAt,
-	AuthorId: task.AuthorId,})
+			Description: task.Description, Completed: task.Completed, CreatedAt: task.CreatedAt, CompletedAt: task.CompletedAt,
+			AuthorId: task.AuthorId})
 	}
 	return tasksDTO
 }
 
+// GetTasks godoc
+// @Summary Получить задачи
+// @Description Получить информацию о всех существующих задачах в системе с опциональной пагинацией
+// @Tags tasks
+// @Produce json
+// @Param limit query int false "Размер страницы с задачами"
+// @Param offset query int false "Смещение страницы с задачами"
+// @Success 200 {object} GetTaskResponse "Успешно полученные задачи"
+// @Failure 400 {object} core_http_response.ErrorResponse "Bad request"
+// @Failure 500 {object} core_http_response.ErrorResponse "Internal server error"
+// @Router /tasks [get]
 func (h *TasksHTTPHandler) GetTasks(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	log := core_logger.FromContext(ctx)
