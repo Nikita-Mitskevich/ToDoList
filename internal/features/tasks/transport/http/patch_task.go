@@ -20,7 +20,7 @@ func PatchTaskDTOFromDomain(task domain.Task) PatchTaskDTO {
 }
 
 type TaskPatchStruct struct {
-	Name        core_http_types.Nullable[string] `swaggertype:"string" json:"full_name"`
+	Name        core_http_types.Nullable[string] `swaggertype:"string" json:"title"`
 	Description core_http_types.Nullable[string] `swaggertype:"string" json:"description"`
 	Completed   core_http_types.Nullable[bool]   `swaggertype:"bool" json:"completed"`
 }

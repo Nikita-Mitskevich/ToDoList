@@ -6,12 +6,14 @@ import (
 	"os/signal"
 	core_logger "restapi/internal/core/logger"
 	core_pgx_pool "restapi/internal/core/repository/postgres/pool/pgx"
+	core_goredisv9_pool "restapi/internal/core/repository/redis/pool/go-redis-v9"
 	"restapi/internal/core/transport/http/middleware"
 	"restapi/internal/core/transport/http/server"
 	statistics_repository "restapi/internal/features/statistics/repository"
 	statistics_service "restapi/internal/features/statistics/service"
 	statistics_transport_http "restapi/internal/features/statistics/transport/http"
 	tasks_postgres_repository "restapi/internal/features/tasks/repository/postgres"
+	tasks_reddis_repository "restapi/internal/features/tasks/repository/reddis"
 	tasks_service "restapi/internal/features/tasks/service"
 	tasks_transport "restapi/internal/features/tasks/transport/http"
 	users_postgres_repository "restapi/internal/features/users/repository/postgres"
@@ -58,6 +60,13 @@ func main() {
 	}
 	defer pool.Close()
 
+	log.Debug("initializing redis connection pool")
+	cache_pool, err := core_goredisv9_pool.NewRedisv9Pool(ctx, core_goredisv9_pool.NewConfigMust())
+	if err != nil {
+		log.Fatal("failed to init redis connection pool", zap.Error(err))
+	}
+	defer cache_pool.Close()
+
 	log.Debug("initializing feature", zap.String("feature", "users"))
 	usersRepository := users_postgres_repository.NewUsersRepository(pool)
 	usersService := users_service.NewUserService(usersRepository)
@@ -65,7 +74,8 @@ func main() {
 
 	log.Debug("initializing feature", zap.String("feature", "tasks"))
 	tasksRepository := tasks_postgres_repository.NewTasksRepository(pool)
-	tasksService := tasks_service.NewTasksService(tasksRepository)
+	reddisRepository := tasks_reddis_repository.NewTasksRepository(cache_pool, tasksRepository)
+	tasksService := tasks_service.NewTasksService(reddisRepository)
 	tasksTransport := tasks_transport.NewTasksHTTPHandler(tasksService)
 
 	log.Debug("initializing feature", zap.String("feature", "statistics"))

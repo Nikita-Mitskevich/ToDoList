@@ -18,7 +18,7 @@ func (r *TasksRepository) PatchTask(ctx context.Context, taskId int, taskPatch d
 	description = $2,
 	completed = $3,
 	created_at = $4,
-	completed_at = $5
+	completed_at = $5 
 	WHERE id = $6 AND version = $7
 	RETURNING id, version, title, description, completed, created_at, completed_at, author_user_id
 	`

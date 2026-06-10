@@ -52,3 +52,13 @@ services:
         ENTRYPOINT ["swag"]
     volumes:
       - ./:/code
+
+  todoapp-redis:
+    image: redis:8.6.1
+    container_name: todoapp-env-redis
+    command: redis-server --requirepass ${REDIS_PASSWORD}
+    volumes:
+      - ${PROJECT_ROOT}/out/redis_data:/data
+    restart: always
+    ports:
+    - "127.0.0.1:6379:6379"
